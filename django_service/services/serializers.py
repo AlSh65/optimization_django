@@ -17,6 +17,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_price(self, instance):
         return instance.price
+
     class Meta:
         model = Subscription
         fields = ('id', 'plan_id', 'client_name', 'email', 'plan', 'price')

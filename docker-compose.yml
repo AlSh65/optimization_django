@@ -23,9 +23,11 @@ services:
       - POSTGRES_DB=django_service_db
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=1234
+
   redis:
     image: redis:7.0.5-alpine
     hostname: redis
+
   worker:
     build:
       context: .
@@ -38,3 +40,25 @@ services:
       - redis
     depends_on:
       - redis
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_NAME=django_service_db
+      - DB_USER=admin
+      - DB_PASS=1234
+
+  flower:
+    build:
+      context: .
+    hostname: flower
+    entrypoint: celery
+    command: -A celery_app.app flower
+    volumes:
+      - ./django_service:/django_service
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - '5555:5555'
+
